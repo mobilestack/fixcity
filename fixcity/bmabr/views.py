@@ -68,6 +68,7 @@ SRID=4326
 # XXX Need to figure out what order we really want these in.
 DEFAULT_RACK_ORDER = ('-date', '-id')
 
+
 def media_refresh_context(request):
     return {'refresh_token': settings.MEDIA_REFRESH_TOKEN}
 
@@ -104,7 +105,7 @@ def blank_page(request):
     """
     return render_to_response(
         'base.html', {}, context_instance=RequestContext(request))
-                      
+
 @login_required
 def profile(request):
     user = request.user
@@ -226,12 +227,17 @@ def racks_by_communityboard(request, cb_id):
             context_instance=RequestContext(request))
 
 def _preprocess_rack_form(postdata):
-    """Handle an edge case where the form is submitted before the
+    """Fix up form data in-place.
+
+    Handles an edge case where the form is submitted before the
     client-side ajax code finishes setting the location.
     This can easily happen eg. if the user types an
     address and immediately hits return or clicks submit.
 
     Also do any other preprocessing needed.
+
+    We don't do this in the RackForm cleaning methods because
+    we depend on input fields that aren't part of the model.
     """
 
     if int(postdata[u'geocoded']) != 1:
@@ -309,7 +315,11 @@ def newrack_form(request):
         _preprocess_rack_form(request.POST)
         result = _newrack(request.POST, request.FILES)
         form = result['form']
-        if not result['errors']:
+        if form.warnings:
+            for w in form.warnings:
+                flash(w, request)
+            return HttpResponseRedirect(urlresolvers.reverse(racks_index))
+        elif not result['errors']:
             message = '''<h2>Thank you for your suggestion!</h2><p>Racks can take six months or more for the DOT to install, but we\'ll be in touch about its progress.</p><a href="/racks/new/">Add another rack</a> or continue to see other suggestions.'''
             flash(message, request)
             return HttpResponseRedirect(urlresolvers.reverse(racks_index))
