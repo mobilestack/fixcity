@@ -600,8 +600,11 @@ def community_board_kml(request, cb_id):
     except ValueError:
         raise Http404
     community_board = get_object_or_404(CommunityBoard, gid=cb_id)
+    geom = community_board.the_geom.simplify(tolerance=0.0005)
     return render_to_kml("community_board.kml",
-                         {'communityboard': community_board})
+                         {'communityboard': community_board,
+                          'geom': geom,
+                          })
 
 def borough_kml(request, boro_id):
     try:
@@ -610,7 +613,9 @@ def borough_kml(request, boro_id):
         raise Http404
     borough = get_object_or_404(Borough, gid=boro_id)
     return render_to_kml('borough.kml',
-                         {'borough': borough})
+                         {'borough': borough, 
+                          'geom': borough.the_geom.simplify(tolerance=0.0005,
+                                                            preserve_topology=True)})
 
 def cityracks_kml(request):
     bbox = request.REQUEST.get('bbox')
@@ -995,8 +1000,6 @@ To finish your bulk order, follow this link:
 
 
 def bulk_order_csv(request, bo_id):
-    from fixcity.bmabr import bulkorder
-
     bo = get_object_or_404(NYCDOTBulkOrder, id=bo_id)
     cb = bo.communityboard
     response = HttpResponse(mimetype='text/csv')
@@ -1006,7 +1009,6 @@ def bulk_order_csv(request, bo_id):
     return response
 
 def bulk_order_pdf(request, bo_id):
-    from fixcity.bmabr import bulkorder
     bo = get_object_or_404(NYCDOTBulkOrder, id=bo_id)
     response = HttpResponse(mimetype='application/pdf')
     filename = bulkorder.make_filename(bo, 'pdf')
@@ -1016,7 +1018,6 @@ def bulk_order_pdf(request, bo_id):
 
 
 def bulk_order_zip(request, bo_id):
-    from fixcity.bmabr import bulkorder
     bo = get_object_or_404(NYCDOTBulkOrder, id=bo_id)
     response = HttpResponse(mimetype='application/zip')
     filename = bulkorder.make_filename(bo, 'zip')
