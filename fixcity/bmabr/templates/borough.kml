@@ -4,7 +4,7 @@
   <name>{{borough.boroname}}</name>
   <description>Borough {{borough.boroname}}</description>
   {% autoescape off %}
-  {{borough.the_geom.kml}}
+  {{geom.kml}}
   {% endautoescape %}
 </Placemark>
 {% endblock %}

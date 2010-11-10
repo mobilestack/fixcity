@@ -5,6 +5,14 @@ from sorl.thumbnail.fields import ImageWithThumbnailsField
 
 RACK_IMAGE_LOCATION = 'images/racks/'
 
+RACK_NOT_IN_COVERED_AREA = """
+<h1>Warning, location not in our covered area!</h1>
+<p>Our pilot project is only covering Brooklyn Community Board 1.
+We'll save your rack request,
+but until we expand beyond our pilot area, it's likely that nothing
+will be done with your request. See the <a href="/faq">FAQ</a> for more info.
+</p>
+"""
 
 class CommunityBoard(models.Model):
     gid = models.IntegerField(primary_key=True)
@@ -348,6 +356,10 @@ class RackForm(ModelForm):
     class Meta:
         model = Rack
 
+    def __init__(self, *args, **kwargs):
+        super(RackForm, self).__init__(*args, **kwargs)
+        self.warnings = []
+
     def clean_photo(self):
         photo = self.cleaned_data.get('photo')
         if not photo:
@@ -360,6 +372,22 @@ class RackForm(ModelForm):
             photo.seek(0)
             rotated.save(photo)
         return photo
+
+    def clean_location(self):
+        # Check if the location is within an area we cover.  currently
+        # just Brooklyn CB1; If not, set a warning.  We can't do this in
+        # RackForm because there's nowhere to put a message other than
+        # RackForm._errors, which would prevent saving.
+        location = self.cleaned_data.get('location')
+        if location:
+            from django.contrib.gis.geos import GEOSGeometry
+            point = GEOSGeometry(location)
+            bk = Borough.brooklyn()
+            cb1 = CommunityBoard.objects.filter(borough=bk, board=1)[0]
+            if not point.intersects(cb1.the_geom):
+                self.warnings.append(RACK_NOT_IN_COVERED_AREA)
+        return location
+
 
     def clean(self):
         from django.forms.util import ErrorList

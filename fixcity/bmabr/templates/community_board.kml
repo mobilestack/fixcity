@@ -4,7 +4,7 @@
    <name>{{communityboard.name}}</name>
    <description>community board {{communityboard.name}}</description>
    {% autoescape off %}
-   {{communityboard.the_geom.kml}}
+   {{geom.kml}}
    {% endautoescape %}
 </Placemark>
 {% endblock %}
