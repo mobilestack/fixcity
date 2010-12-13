@@ -8,7 +8,11 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         from django.contrib.auth.models import Group, Permission
-        perm = Permission.objects.get(codename='add_nycdotbulkorder')
+        try:
+            perm = Permission.objects.get(codename='add_nycdotbulkorder')
+        except Permission.DoesNotExist:
+            perm = Permission.objects.create(codename='add_nycdotbulkorder')
+            perm.save()
         # Add a group with that permission.
         group = Group(name='bulk_ordering')
         group.save()
