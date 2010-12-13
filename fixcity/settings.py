@@ -241,6 +241,12 @@ if not logger.handlers:
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
-logger.setLevel(logging.DEBUG)
+if DEBUG:
+    logger.setLevel(logging.DEBUG)
+else:
+    logger.setLevel(logging.INFO)
 
 LOGGER = logger
+
+SKIP_SOUTH_TESTS = True
+SOUTH_TESTS_MIGRATE = False
