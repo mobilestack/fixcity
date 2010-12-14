@@ -73,6 +73,10 @@ Given all the prerequisites above, just run ``python setup.py develop``,
 preferably in a virtualenv to avoid installing stuff into your global
 python site-packages.
 
+(There is also a pip requirements file if you want to use pip to get a
+known-working set of package versions.  Do ``pip install -r
+pip-requirements.txt && python setup.py develop``)
+
 
 Bootstrapping a Database
 ------------------------
