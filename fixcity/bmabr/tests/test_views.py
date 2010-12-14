@@ -450,6 +450,7 @@ class TestBulkOrderViews(UserTestCaseBase):
     geom = 'MULTIPOLYGON (((0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 1.0, 0.0 0.0)))'
 
     def _make_cb(self):
+        # TODO: should just use fixtures.
         from fixcity.bmabr.models import CommunityBoard, Borough
         from decimal import Decimal
         borough = Borough(boroname='Brooklyn', gid=1, borocode=1,

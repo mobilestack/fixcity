@@ -101,3 +101,28 @@ class TestBulkOrderFunctions(UserTestCaseBase):
         # each time, as if the service on the other end was dead...
         self.assertEqual(mock_get_map.call_count, 3)
 
+
+class TestBulkOrderCommand(TestCase):
+
+    fixtures = ['superuser_test_fixture.json',
+                'communityboard_test_fixture.json',
+                ]
+
+    @mock.patch('fixcity.bmabr.management.commands.make_bulkorder.logger')
+    def test_handle__no_args(self, mock_logger):
+        from fixcity.bmabr.management.commands.make_bulkorder import Command
+        c = Command()
+        import optparse
+        self.assertRaises(optparse.OptParseError, c.handle)
+
+
+    @mock.patch('fixcity.bmabr.bulkorder.make_zip')
+    @mock.patch('fixcity.bmabr.management.commands.make_bulkorder.logger')
+    def test_handle(self, mock_logger, mock_make_zip):
+        from fixcity.bmabr.management.commands.make_bulkorder import Command
+        c = Command()
+        c.handle('Manhattan', '1')
+        try:
+            self.assertEqual(mock_make_zip.call_count, 1)
+        finally:
+            os.unlink(c._filename)
