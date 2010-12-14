@@ -31,7 +31,6 @@ def make_pdf(bulk_order, outfile):
     Generates a PDF and writes it to file-like object `outfile`.
     """
     cb = bulk_order.communityboard
-    date = bulk_order.date.replace(microsecond=0)
     doc = SimpleDocTemplate(outfile, pagesize=letter,
                             leftMargin=0.5 * inch,
                             rightMargin=0.75 * inch,
@@ -286,6 +285,10 @@ def make_zip(bulk_order, outfile):
 
 
 def make_filename(bulk_order, extension):
+    """
+    Make a filename based on the bulk_order's metadata and the
+    provided extension.
+    """
     # TODO: DOT wants a unique ID number on each BO request
     # as part of the filename;
     # re-submitting would change the number.
@@ -296,4 +299,5 @@ def make_filename(bulk_order, extension):
     name = "%s_%s.%s" % (str(cb).replace(' ', '-'), date.isoformat('-'),
                          extension)
     return name
+
 
