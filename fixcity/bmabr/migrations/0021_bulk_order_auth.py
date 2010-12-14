@@ -7,21 +7,34 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        from django.contrib.auth.models import Group, Permission
-        try:
-            perm = Permission.objects.get(codename='add_nycdotbulkorder')
-        except Permission.DoesNotExist:
-            perm = Permission.objects.create(codename='add_nycdotbulkorder')
+        Permission = orm['auth.Permission']
+        Group = orm['auth.Group']
+        # We use get_or_create because normally the ContentType and
+        # Permission aren't created until South sends the
+        # post_migration signal.  So the permission and content type
+        # don't exist until the second time we run migrations.  It's
+        # apparently safe to get_or_create() them manually, as long as
+        # we get the arguments right.
+        ContentType = orm['contenttypes.ContentType']
+        ct, created = ContentType.objects.get_or_create(
+            model=u'nycdotbulkorder', app_label=u'bmabr',
+            name=u'nycdot bulk order')
+        if created:
+            ct.save()
+        perm, created = Permission.objects.get_or_create(
+            content_type=ct, codename='add_nycdotbulkorder',
+            name='Can add nycdot bulk order')
+        if created:
             perm.save()
-        # Add a group with that permission.
+
         group = Group(name='bulk_ordering')
-        group.save()
+        group.save()  # Needs a PK before we can add a many-to-many relationship
         group.permissions.add(perm)
         group.save()
 
     def backwards(self, orm):
         # Remove the group that can add bulk orders.
-        from django.contrib.auth.models import Group
+        Group = orm['auth.Group']
         group = Group.objects.get(name='bulk_ordering')
         group.delete()
 
