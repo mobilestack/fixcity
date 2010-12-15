@@ -1040,9 +1040,10 @@ def neighborhood_for_rack(rack):
     if row is None:
         return '<unknown>'
     return row[0]
-    
-    
+
+
 def cross_streets_for_rack(rack):
+    # This could all probably be expressed as Django ORM data, but, eh.
     from django.db import connection
     cursor = connection.cursor()
     # The WHERE clause is an optimization that avoids looking at
