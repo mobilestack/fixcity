@@ -2,7 +2,8 @@ from django import template
 
 register = template.Library()
 
-
+# TODO: this really does not belong in code.
+# Use a flatpage instead and include its content?
 verification_details = {
     'surface': [
         "11' from public sidewalk",

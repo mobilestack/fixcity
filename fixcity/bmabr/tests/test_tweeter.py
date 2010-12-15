@@ -43,7 +43,7 @@ class TestTweeter(TestCase):
         fetcher = tweeter.TwitterFetcher(None, self.username, None)
         self.StubTweet.text = 'invalid format'
         self.assertEqual(fetcher.parse(self.StubTweet), None)
-        
+
     def test_newrack_json_twitter(self):
         from fixcity.bmabr.views import newrack_json
         self.assertEqual(len(Source.objects.all()), 0)
@@ -71,7 +71,7 @@ class TestTweeter(TestCase):
         self.failUnless(data.has_key('user'))
         self.failUnless(data.has_key('message'))
         self.assertEqual(len(Source.objects.all()), 1)
-        
+
     @mock.patch('tweepy.API.mentions')
     def test_get_tweets__server_error(self, mock_mentions):
         import tweepy

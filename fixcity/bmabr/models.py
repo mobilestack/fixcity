@@ -236,22 +236,27 @@ NEED_PHOTO_TO_VERIFY = "You can't mark a rack as verified unless it has a photo"
 NEED_LOGGEDIN_OR_EMAIL = "Email is required if you're not logged in."
 
 class CityRack(models.Model):
+    # Fields derived from what we got in the gis_cityracks.sql file.
+    # We probably don't need many of these.
+    # Where did we get that file? No idea.
+    # Which fields allow null=True is purely pragmatic based on which
+    # fields had NULLs in the source data.
     gid = models.IntegerField(primary_key=True)
     objectid = models.DecimalField(max_digits=1000, decimal_places=100)
     address = models.DecimalField(max_digits=1000, decimal_places=100)
     street_nam = models.CharField(max_length=31)
-    zip_code_1 = models.CharField(max_length=12)
+    zip_code_1 = models.CharField(max_length=12, null=True)
     from__cros = models.CharField(max_length=22)
-    to__cross = models.CharField(max_length=22)
+    to__cross = models.CharField(max_length=22, null=True)
     boro_1 = models.CharField(max_length=8)
-    neighborho = models.CharField(max_length=21)
-    side_of_st = models.CharField(max_length=12)
+    neighborho = models.CharField(max_length=21, null=True)
+    side_of_st = models.CharField(max_length=12, null=True)
     small = models.IntegerField()
     large = models.IntegerField()
-    alt_addres = models.CharField(max_length=31)
+    alt_addres = models.CharField(max_length=31, null=True)
     x = models.DecimalField(max_digits=1000, decimal_places=100)
     y = models.DecimalField(max_digits=1000, decimal_places=100)
-    id = models.CharField(max_length=13)
+    id = models.CharField(max_length=13, null=True)
     oppaddress = models.DecimalField(max_digits=1000, decimal_places=100)
     borocode = models.DecimalField(max_digits=1000, decimal_places=100)
     c_racksid = models.CharField(max_length=17)
@@ -318,15 +323,14 @@ class NYCDOTBulkOrder(models.Model):
 
 class NYCStreet(models.Model):
 
-    # A small subset of the NYC streets database schema
-    # ... maybe not even needed.
+    # A small subset of the NYC streets database schema.
     # converted from http://www.nyc.gov/html/dcp/html/bytes/dwnlion.shtml
 
     gid = models.IntegerField(primary_key=True)
     street = models.CharField(max_length=35)
     nodeidfrom = models.CharField(max_length=7)
     nodeidto = models.CharField(max_length=7)
-    zipleft = models.CharField(max_length=5)
+    zipleft = models.CharField(max_length=5, null=True)
     the_geom = models.MultiLineStringField()
 
     objects = models.GeoManager()
@@ -382,10 +386,14 @@ class RackForm(ModelForm):
         if location:
             from django.contrib.gis.geos import GEOSGeometry
             point = GEOSGeometry(location)
-            bk = Borough.brooklyn()
-            cb1 = CommunityBoard.objects.filter(borough=bk, board=1)[0]
-            if not point.intersects(cb1.the_geom):
+            try:
+                bk = Borough.brooklyn()
+            except Borough.DoesNotExist:
                 self.warnings.append(RACK_NOT_IN_COVERED_AREA)
+            else:
+                cb_qs = list(CommunityBoard.objects.filter(borough=bk, board=1))
+                if not (cb_qs and point.intersects(cb_qs[0].the_geom)):
+                    self.warnings.append(RACK_NOT_IN_COVERED_AREA)
         return location
 
 

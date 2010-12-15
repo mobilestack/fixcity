@@ -4,11 +4,11 @@ version='0.1dev'
 
 install_requires=[
       'geopy>=geopy-0.93-f1',
-      'sorl-thumbnail>=3.2.2',
+      'sorl-thumbnail>=3.2.2,<10',
       'django>=1.1.1',
       'django-registration>=0.7',
       'psycopg2>=2.0.12',
-      'PIL==1.1.6',
+      'PIL>=1.1.6',
       'wsgilog>=0.2',
       'httplib2>=0.6',
       'poster',
@@ -21,7 +21,7 @@ install_requires=[
       'django_flash_templatetag',
       'django_pagination',
       'coverage',
-      'django-voting==0.1',
+      'django-voting>=0.1',
       'django-attachments',
       'recaptcha-client',
       'lxml',

@@ -181,6 +181,9 @@ INSTALLED_APPS = (
 #    'compressor',
 )
 
+# see http://south.aeracode.org/docs/settings.html
+SKIP_SOUTH_TESTS = True
+SOUTH_TESTS_MIGRATE = False
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.auth",
@@ -206,9 +209,12 @@ COVERAGE_MODULES = [
     'fixcity.bmabr.management.commands.http',
     'fixcity.bmabr.management.commands.seeclickfix',
     'fixcity.bmabr.management.commands.tweeter',
+    'fixcity.bmabr.management.commands.make_bulkorder',
     'fixcity.bmabr.models',
     'fixcity.bmabr.templatetags.google_analytics',
     'fixcity.bmabr.templatetags.recaptcha_tags',
+    'fixcity.bmabr.templatetags.rackheart_tags',
+    'fixcity.bmabr.templatetags.rackverification_tags',
     'fixcity.bmabr.views',
     'fixcity.exif_utils',
     'fixcity.flash_messages',
@@ -241,6 +247,12 @@ if not logger.handlers:
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
-logger.setLevel(logging.DEBUG)
+if DEBUG:
+    logger.setLevel(logging.DEBUG)
+else:
+    logger.setLevel(logging.INFO)
 
 LOGGER = logger
+
+SKIP_SOUTH_TESTS = True
+SOUTH_TESTS_MIGRATE = False
