@@ -1,7 +1,7 @@
 BeautifulSoup==3.1.0.1
-Django==1.1.1
-PIL==1.1.7
-South==0.6.2
+Django==1.1.2
+PIL>=1.1.7
+South==0.7.2
 coverage==3.2
 django-attachments==0.3.1
 django-flash==1.7
@@ -12,11 +12,11 @@ django-voting==0.1
 ## FIXME: could not find svn URL in dependency_links for this package:
 #geopy==0.93dev-r84
 geopy==0.94
-httplib2==0.6.0
-lxml==2.2.4
+httplib2>=0.6.0
+lxml>=2.2.6
 mock==0.6.0
 poster==0.5
-psycopg2==2.2.2
+psycopg2>=2.2.2
 
 recaptcha-client==1.0.5
 reportlab==2.4
@@ -25,8 +25,8 @@ tweepy==1.4
 
 # We rolled our own tarballs of these because the authors didn't distribute them in a form
 # that pip could install... eg. no setup.py
-https://svn.openplans.org/eggs/python-bitly-0.1.tar.gz
-https://source.openplans.org/eggs/django-basic-apps-0.6.tar.gz
-https://source.openplans.org/eggs/django_flash_templatetag-0.1.tar.gz
-http://svn.openplans.org/eggs/django-voting-0.1.tar.gz
-http://svn.openplans.org/eggs/wsgilog-0.2.tar.gz
+https://source.openplans.org/eggs/python-bitly-0.1.tar.gz#egg=python_bitly
+https://source.openplans.org/eggs/django-basic-apps-0.6.tar.gz#egg=django_basic_apps
+https://source.openplans.org/eggs/django_flash_templatetag-0.1.tar.gz#egg=django_flash_templatetag
+http://source.openplans.org/eggs/django-voting-0.1.tar.gz#egg=django_voting
+http://source.openplans.org/eggs/wsgilog-0.2.tar.gz#egg=wsgilog

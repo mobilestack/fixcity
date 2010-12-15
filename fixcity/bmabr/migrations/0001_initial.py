@@ -2,6 +2,7 @@
 from south.db import db
 from django.db import models
 from fixcity.bmabr.models import *
+import django.db.utils
 
 class Migration:
     
@@ -30,16 +31,22 @@ class Migration:
         ))
         db.send_create_signal('bmabr', ['Source'])
         
+        db.commit_transaction()
+        db.start_transaction()
         # Adding model 'CommunityBoard'
         # XXX this is created by the initial sql script
-        # db.create_table(u'gis_community_board', (
-        #     ('gid', orm['bmabr.CommunityBoard:gid']),
-        #     ('borocd', orm['bmabr.CommunityBoard:borocd']),
-        #     ('name', orm['bmabr.CommunityBoard:name']),
-        #     ('the_geom', orm['bmabr.CommunityBoard:the_geom']),
-        # ))
-        # db.send_create_signal('bmabr', ['CommunityBoard'])
-        
+        # but not in the test suite.
+        try:
+            db.create_table(u'gis_community_board', (
+                ('gid', orm['bmabr.CommunityBoard:gid']),
+                ('borocd', orm['bmabr.CommunityBoard:borocd']),
+                ('name', orm['bmabr.CommunityBoard:name']),
+                ('the_geom', orm['bmabr.CommunityBoard:the_geom']),
+                ))
+            db.send_create_signal('bmabr', ['CommunityBoard'])
+        except django.db.utils.DatabaseError:
+            db.rollback_transaction()
+            db.start_transaction()
         # Adding model 'Rack'
         db.create_table('bmabr_rack', (
             ('id', orm['bmabr.Rack:id']),

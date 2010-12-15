@@ -2,6 +2,7 @@
 from south.db import db
 from django.db import models
 from fixcity.bmabr.models import *
+import django.db.utils
 
 class Migration:
     
@@ -13,7 +14,12 @@ class Migration:
                                'borough',
                                )
         for col in unused_cols_to_drop:
-            db.delete_column(u'gis_community_board', col)
+            try:
+                db.delete_column(u'gis_community_board', col)
+            except django.db.utils.DatabaseError:
+                db.rollback_transaction()
+                db.start_transaction()
+                
     
     
     def backwards(self, orm):

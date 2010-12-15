@@ -181,6 +181,9 @@ INSTALLED_APPS = (
 #    'compressor',
 )
 
+# see http://south.aeracode.org/docs/settings.html
+SKIP_SOUTH_TESTS = True
+SOUTH_TESTS_MIGRATE = False
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.auth",
