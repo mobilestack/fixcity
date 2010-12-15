@@ -19,6 +19,10 @@ from voting.models import Vote
 import datetime
 import os
 
+import logging
+
+logger = logging.getLogger()
+
 stylesheet = getSampleStyleSheet()
 normalStyle = stylesheet['Normal']
 
@@ -30,6 +34,7 @@ def make_pdf(bulk_order, outfile):
     """
     Generates a PDF and writes it to file-like object `outfile`.
     """
+    logger.info('Starting make_pdf')
     cb = bulk_order.communityboard
     doc = SimpleDocTemplate(outfile, pagesize=letter,
                             leftMargin=0.5 * inch,
@@ -51,6 +56,7 @@ def make_pdf(bulk_order, outfile):
         body.extend(make_rack_page(rack))
 
     doc.build(body)
+    logger.info('Finished make_pdf')
 
 
 def make_rack_table(racks):
@@ -158,6 +164,7 @@ def make_rack_page(rack):
         object_pk=smart_unicode(rack.pk), site__pk=settings.SITE_ID).count()
 
     flowables.append(Paragraph('<b>%d comments</b>' % comment_count, normalStyle))
+    # TODO: append comment text!
 
     return flowables
 
@@ -190,7 +197,13 @@ def get_map(bbox, size=(400, 256), format='jpg'):
               'key': key}    
     query = urllib.urlencode(params)
     url = "%s?%s" % (url, query)
+    logger.debug('Fetching %r' % url )
     http = httplib2.Http('.cache', timeout=30)
+    # Google has some sort of rate limit, but they don't document what it is.
+    # (Also a daily cap of 1000 per client.)
+    # Let's sleep a bit and pray...
+    import time
+    time.sleep(1)
     response, data = http.request(url)
     if response.status != 200:
         raise RuntimeError("Response %s while retrieving %s" % (response.status, url))
@@ -203,6 +216,7 @@ def get_map(bbox, size=(400, 256), format='jpg'):
     return path
 
 def make_csv(bo, outfile):
+    logger.info('Start make_csv')
     import csv
     fieldnames = ("ID", "TrackNum", "DateIn", "Action_", "GenBy",
                   "Requestor", "Address", "Address2", "ReqBoro", "ZipCode",
@@ -282,11 +296,19 @@ def make_csv(bo, outfile):
             #row.append(s.file.url)
             pass
 
+        # DictWriter doesn't handle encoding automatically.
+        for k, v in row.items():
+            if v is None:
+                v = u''
+            if isinstance(v, basestring):
+                row[k] = v.encode('utf8')
         csv_writer.writerow(row)
+    logger.info('Start make_csv')
 
 def make_zip(bulk_order, outfile):
     """Generates a zip and writes it to file-like object `outfile`.
     """
+    logger.info('Start make_zip')
     now = datetime.datetime.utcnow().timetuple()[:6]
     import zipfile
     zf = zipfile.ZipFile(outfile, 'w')
@@ -316,6 +338,7 @@ def make_zip(bulk_order, outfile):
         zf.writestr(info, open(path).read())
 
     zf.close()
+    logger.info('Finished make_zip')
 
 
 
