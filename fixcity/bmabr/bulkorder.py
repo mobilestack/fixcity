@@ -212,7 +212,7 @@ def get_map(bbox, size=(400, 256), format='jpg'):
     tmp, path = tempfile.mkstemp('.%s' % format)
     os.write(tmp, data)
     os.close(tmp)
-    
+
     return path
 
 def make_csv(bo, outfile):
@@ -231,7 +231,8 @@ def make_csv(bo, outfile):
                   "WorkOrder", "InstDate", "Invoice", "Image_", "txtImgName")
 
     # In python 2.7 you can do: csv_writer.writeheader()
-    outfile.write(', '.join(['"%s"' % key for key in fieldnames]))
+    outfile.write(', '.join(fieldnames))
+    outfile.write('\r\n')
 
     csv_writer = csv.DictWriter(outfile, fieldnames)
 
@@ -356,6 +357,7 @@ def make_filename(bulk_order, extension):
     cb = bulk_order.communityboard
     name = "%s_%s.%s" % (str(cb).replace(' ', '-'), date.isoformat('-'),
                          extension)
+    name = name.replace(':', '')
     return name
 
 
