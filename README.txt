@@ -120,6 +120,15 @@ Just do::
 
   ./manage.py test bmabr
 
+Exporting Bulk Orders
+=====================
+
+This feature is still in flux; as of 2010-12-15, there is a web UI
+that isn't linked to from anywhere, and a command-line command you can
+probably use more reliably/conveniently.  Just do ``manage.py
+make_bulkorder <boroughname> <community board number>``.
+
+
 Deployment
 ==========
 
